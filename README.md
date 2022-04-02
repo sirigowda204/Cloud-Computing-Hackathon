@@ -1,1 +1,1 @@
-# Cloud-Computing-Hackathon
+# Cloud Computing Hackathon
