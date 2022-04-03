@@ -1,0 +1,66 @@
+version: "2.2"
+
+services:
+  mysql:
+    image: mysql:5.7
+    restart: always
+    container_name: database
+    environment:
+      TZ: "Asia/Kolkata"
+
+      MYSQL_DATABASE: hitech
+      # So you don't have to use root, but you can if you like
+      MYSQL_USER: hitech
+      # You can use whatever password you like
+      MYSQL_PASSWORD: Hitech@2007#
+      # Password for root access
+      MYSQL_ROOT_PASSWORD: Hitech@2007#
+    ports:
+      # <Port exposed> : < MySQL Port running inside container>
+      - 3306:3306
+
+
+  rabbitmq:
+    image: rabbitmq:3.9.11-management-alpine
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  rmconsumer:
+    # image: rmconsumerimage
+    build: rmconsumer
+    volumes:
+      - ./rmconsumer:/ride_matching_consumer
+    environment:
+      - PYTHONUNBUFFERED=1
+      - SERVER_IP=producer
+      - SERVER_PORT=6000
+      - CUST_ID=1
+      - CONSUMERIP="192.168.1.1"
+      - CONSUMERNAME="Consumer1"
+
+  rmconsumer2:
+      # image: rmconsumerimage
+      build: rmconsumer
+      volumes:
+        - ./rmconsumer:/ride_matching_consumer
+      environment:
+        - PYTHONUNBUFFERED=1
+        - SERVER_IP=producer
+        - SERVER_PORT=6000
+        - CUST_ID=2
+        - CONSUMERIP="192.168.1.2"
+        - CONSUMERNAME="Consumer2"
+
+
+
+  producer:
+      build: producer
+      # image: producerimage
+      volumes:
+        - ./producer:/producer
+      ports:
+        - 6000:6000
+
+
